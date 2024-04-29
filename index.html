@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chatbot</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap");
+
+      body {
+        font-family: sans-serif;
+        overflow: hidden; /* Prevent scrolling */
+      }
+
+      #chatbot-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        z-index: 999;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        background-image: url("chatbg.png");
+        background-size: cover;
+        background-repeat: no-repeat;
+      }
+
+      #chat-container {
+        padding: 20px;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 22px;
+        font-family: "DM Sans", sans-serif;
+        color: #ffffff;
+      }
+
+      #chat-history {
+        height: 100px;
+        overflow-y: auto; /* Enables scrolling when necessary */
+        /* hide scrollbar */
+        scrollbar-width: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      }
+
+      .user-message {
+        text-align: right;
+        padding: 10px;
+        background-color: #f0f0f0;
+        border-radius: 10px;
+        margin-bottom: 5px;
+        font-size: 18px;
+        font-family: "DM Sans", sans-serif;
+        width: 50%;
+      }
+
+      .bot-message {
+        text-align: left;
+        padding: 10px;
+        background-color: #f8d8d8;
+        border-radius: 10px;
+        margin-bottom: 5px;
+        font-size: 16px;
+        font-family: "DM Sans", sans-serif;
+        width: 50%;
+      }
+
+      form {
+        display: flex;
+      }
+
+      input {
+        flex-grow: 1;
+        margin-right: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+        font-family: "DM Sans", sans-serif;
+      }
+
+      button {
+        background-color: #d10000;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        font-family: "DM Sans", sans-serif;
+      }
+
+      #loader {
+        display: none; /* Hide by default */
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      /* Close button style */
+      .close-button {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background-color: transparent;
+        border: none;
+        color: #333;
+        font-size: 20px;
+        cursor: pointer;
+        padding: 0;
+        margin: 0;
+      }
+      #chat-form {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 50%;
+      }
+      #chat-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Chatbot container -->
+    <div id="chatbot-container">
+      <div id="chat-container">
+        <!-- Chatbot content -->
+        <h1>Onebusiness Club Chatbot</h1>
+        <div id="chat-history"></div>
+        <div id="chat-content">
+          <form id="chat-form">
+            <input
+              type="text"
+              id="user-input"
+              placeholder="Enter your message"
+            />
+            <button type="submit">Send</button>
+          </form>
+        </div>
+      </div>
+      <div id="loader">
+        <img src="load.gif" width="50px" alt="Loading..." />
+      </div>
+    </div>
+
+    <script>
+      // JavaScript code for toggling chatbot visibility
+      const chatbotContainer = document.getElementById("chatbot-container");
+
+      function toggleChatbot() {
+        chatbotContainer.style.display =
+          chatbotContainer.style.display === "none" ? "block" : "none";
+      }
+
+      // Initially show the chatbot container
+      chatbotContainer.style.display = "block";
+
+      const chatHistory = document.getElementById("chat-history");
+      const userInput = document.getElementById("user-input");
+      const form = document.getElementById("chat-form");
+
+      async function sendMessage() {
+        const userMessage = userInput.value;
+        userInput.value = ""; // Clear input field
+        console.log(userMessage);
+        try {
+          const queryString = window.location.search;
+          const urlParams = new URLSearchParams(queryString);
+          const objectId = urlParams.get("objectId");
+
+          console.log(objectId);
+          const response = await fetch(
+            `https://chatbot-backend-2.onrender.com/chat-history/${objectId}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ userInput: userMessage }),
+            }
+          );
+
+          const data = await response.json();
+          console.log(data);
+          const botMessage = data.response;
+          console.log(botMessage);
+
+          // Add chat message to the chat history
+          chatHistory.innerHTML += `<div class="user-message">${userMessage}</div>`;
+          chatHistory.innerHTML += `<div class="bot-message">${botMessage}</div>`;
+
+          // Scroll to the bottom of the chat history
+          chatHistory.scrollTop = chatHistory.scrollHeight;
+        } catch (error) {
+          console.error("Error:", error);
+          // Handle errors gracefully, e.g., display an error message to the user
+        }
+      }
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault(); // Prevent form submission
+        const loader = document.getElementById("loader");
+        loader.style.display = "block"; // Show the loader
+        sendMessage().finally(() => {
+          loader.style.display = "none"; // Hide the loader after the message is sent
+        });
+      });
+    </script>
+  </body>
+</html>
