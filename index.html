@@ -6,92 +6,98 @@
       @import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap");
 
       body {
-        font-family: sans-serif;
+        font-family: "DM Sans", sans-serif;
         overflow: hidden; /* Prevent scrolling */
+        margin: 0; /* Reset default margin */
+        padding: 0; /* Reset default padding */
       }
 
       #chatbot-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
         width: 100%;
-        z-index: 999;
-        background-color: #fff;
-        border-radius: 10px;
-        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        background-color: rgb(207, 207, 207);
+        padding: 50px;
+        box-sizing: border-box; /* Include padding in width calculation */
         background-image: url("chatbg.png");
         background-size: cover;
         background-repeat: no-repeat;
+        border-radius: 8px;
+        text-align: center; /* Center text */
       }
 
-      #chat-container {
-        padding: 20px;
+      #container-wrapper {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 30px;
+        background-color: rgb(255, 255, 255);
+        border-radius: 10px;
+        position: relative;
+      }
+      /* Custom scrollbar styles */
+      #chat-history::-webkit-scrollbar {
+        width: 6px; /* Set the width of the scrollbar */
       }
 
-      h1 {
-        text-align: center;
-        margin-bottom: 20px;
-        font-size: 22px;
-        font-family: "DM Sans", sans-serif;
-        color: #ffffff;
+      #chat-history::-webkit-scrollbar-thumb {
+        background-color: rgba(
+          0,
+          0,
+          0,
+          0.5
+        ); /* Set the color of the scrollbar thumb */
+        border-radius: 5px; /* Set the border radius of the thumb */
       }
 
-      #chat-history {
-        height: 100px;
-        overflow-y: auto; /* Enables scrolling when necessary */
-        /* hide scrollbar */
-        scrollbar-width: none;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-      }
-
+      .bot-message,
       .user-message {
-        text-align: right;
-        padding: 10px;
-        background-color: #f0f0f0;
         border-radius: 10px;
         margin-bottom: 5px;
-        font-size: 18px;
-        font-family: "DM Sans", sans-serif;
-        width: 50%;
+        font-size: 16px;
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box; /* Include padding in width calculation */
       }
 
       .bot-message {
-        text-align: left;
-        padding: 10px;
         background-color: #f8d8d8;
-        border-radius: 10px;
-        margin-bottom: 5px;
-        font-size: 16px;
-        font-family: "DM Sans", sans-serif;
-        width: 50%;
+        text-align: left;
       }
 
-      form {
+      .user-message {
+        background-color: #ebfdeb;
+        text-align: right;
+      }
+
+      #chat-history {
+        max-height: 200px; /* Set a max-height for scrolling */
+        overflow-y: auto;
+        margin-bottom: 10px;
+        padding-right: 5px;
+      }
+
+      #chat-form {
         display: flex;
+        justify-content: space-between; /* Space out input and button */
+        align-items: center; /* Vertically center items */
       }
 
       input {
-        flex-grow: 1;
-        margin-right: 10px;
+        flex: 1; /* Take remaining space */
         padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
         font-size: 16px;
-        font-family: "DM Sans", sans-serif;
+        border: none;
+        border-radius: 5px;
+        margin-right: 10px;
+        box-sizing: border-box; /* Include padding in width calculation */
       }
 
       button {
-        background-color: #d10000;
-        color: white;
-        border: none;
-        padding: 10px 15px;
-        border-radius: 5px;
-        cursor: pointer;
+        padding: 10px 20px;
         font-size: 16px;
-        font-family: "DM Sans", sans-serif;
+        border: none;
+        border-radius: 5px;
+        background-color: #d10000; /* Example color */
+        color: white; /* Text color */
+        cursor: pointer;
       }
 
       #loader {
@@ -102,54 +108,43 @@
         transform: translate(-50%, -50%);
       }
 
-      /* Close button style */
-      .close-button {
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        background-color: transparent;
-        border: none;
-        color: #333;
-        font-size: 20px;
-        cursor: pointer;
-        padding: 0;
-        margin: 0;
+      /* Typing animation */
+      @keyframes typing {
+        from {
+          width: 0;
+        }
+        to {
+          width: 100%;
+        }
       }
-      #chat-form {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 50%;
+
+      .typing-animation {
+        display: inline-block;
+        overflow: hidden;
       }
-      #chat-content {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        margin: 0 auto;
+
+      .typing-animation span {
+        display: inline-block;
+        white-space: nowrap;
+        overflow: hidden;
+        animation: typing 1s steps(500, end) infinite; /* Loop the animation */
       }
     </style>
   </head>
   <body>
-    <!-- Chatbot container -->
     <div id="chatbot-container">
-      <div id="chat-container">
-        <!-- Chatbot content -->
-        <h1>Onebusiness Club Chatbot</h1>
-        <div id="chat-history"></div>
-        <div id="chat-content">
-          <form id="chat-form">
-            <input
-              type="text"
-              id="user-input"
-              placeholder="Enter your message"
-            />
-            <button type="submit">Send</button>
-          </form>
+      <div id="container-wrapper">
+        <div class="typing-animation">
+          <span>AI Search |</span>
         </div>
-      </div>
-      <div id="loader">
-        <img src="load.gif" width="50px" alt="Loading..." />
+        <div id="chat-history"></div>
+        <form id="chat-form">
+          <input type="text" id="user-input" placeholder="Enter your message" />
+          <button type="submit">Send</button>
+        </form>
+        <div id="loader">
+          <img src="load.gif" width="50px" alt="Loading..." />
+        </div>
       </div>
     </div>
 
